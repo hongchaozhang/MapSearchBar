@@ -57,13 +57,13 @@ extension ViewController: MSIMapSearchViewControllerDelegate {
     func getAllAnnotationsInMap() -> [String: [MSIMWAnnotation]] {
 
         let layerCount = 4
-        let annotationCountPerLayer = 15
+        let annotationCountPerLayer = 8
         var allAnnotations = [String: [MSIMWAnnotation]]()
 
-        for layerIndex in 0...layerCount {
+        for layerIndex in 0..<layerCount {
             let layerName = "layer \(layerIndex)"
             var annotationArray = [MSIMWAnnotation]()
-            for annotationIndex in 0...annotationCountPerLayer {
+            for annotationIndex in 0..<annotationCountPerLayer {
                 let annotationName = "annotation \(annotationIndex) of layer \(layerIndex)"
                 let annotation = MSIMWAnnotation(name: annotationName)
                 annotationArray.append(annotation)
@@ -83,7 +83,7 @@ extension ViewController: MSIMapSearchViewControllerDelegate {
     func getLayerNames() -> [String] {
         let layerCount = 4
         var layerNames = [String]()
-        for layerIndex in 0...layerCount {
+        for layerIndex in 0..<layerCount {
             layerNames.append("layer \(layerIndex)")
         }
         return layerNames

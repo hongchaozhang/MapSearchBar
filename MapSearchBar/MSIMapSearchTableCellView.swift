@@ -14,9 +14,12 @@ public class MSIMapSearchTableCellView: UITableViewCell {
     var contentLabel: UILabel?
 
     func createLabels(searchType: SearchType, contentString: String) {
+        self.selectedBackgroundView = UIView()
+        
+        self.separatorInset = UIEdgeInsets.zero
         if self.iconLabel == nil {
             self.iconLabel = UILabel()
-            self.addSubview(self.iconLabel!)
+            self.contentView.addSubview(self.iconLabel!)
         }
         if let theIconLabel = self.iconLabel {
             theIconLabel.text = "icon"
@@ -27,11 +30,13 @@ public class MSIMapSearchTableCellView: UITableViewCell {
 
         if self.contentLabel == nil {
             self.contentLabel = UILabel()
-            self.addSubview(self.contentLabel!)
+            self.contentView.addSubview(self.contentLabel!)
         }
 
         if let theContentLabel = self.contentLabel {
             theContentLabel.text = contentString
+            theContentLabel.textColor = SearchViewUIConstants.TableView.cellTextColor
+            theContentLabel.font = UIFont(name: SearchViewUIConstants.fontFamily, size: SearchViewUIConstants.TableView.cellFontSize) ?? UIFont.systemFont(ofSize: SearchViewUIConstants.TableView.cellFontSize)
             theContentLabel.sizeToFit()
             let xPosForContent = self.iconLabel!.frame.origin.x + self.iconLabel!.frame.size.width + SearchViewUIConstants.TableView.rightMarginForIcon
             let yPosForContent = (SearchViewUIConstants.TableView.rowHeight - theContentLabel.bounds.size.height) / 2
@@ -39,6 +44,15 @@ public class MSIMapSearchTableCellView: UITableViewCell {
             theContentLabel.frame = CGRect(x: xPosForContent, y: yPosForContent, width: widthForContent, height: theContentLabel.bounds.size.height)
         }
 
+    }
 
+    func highlightCell() {
+        self.contentLabel?.font = UIFont(name: SearchViewUIConstants.highlightFontFamily, size: SearchViewUIConstants.TableView.cellFontSize) ?? UIFont.systemFont(ofSize: SearchViewUIConstants.TableView.cellFontSize)
+//        self.backgroundColor = UIColor.white
+    }
+
+    func dehighlightCell() {
+        self.contentLabel?.font = UIFont(name: SearchViewUIConstants.fontFamily, size: SearchViewUIConstants.TableView.cellFontSize) ?? UIFont.systemFont(ofSize: SearchViewUIConstants.TableView.cellFontSize)
+//        self.backgroundColor = UIColor.white
     }
 }

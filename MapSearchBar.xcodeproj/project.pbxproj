@@ -12,6 +12,8 @@
 		B00C53D11DF8062A009B9F4F /* MSIMWAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00C53D01DF8062A009B9F4F /* MSIMWAnnotation.swift */; };
 		B00C53D51DFA51F4009B9F4F /* MSIMapSearchTableViewFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00C53D41DFA51F4009B9F4F /* MSIMapSearchTableViewFooter.swift */; };
 		B00C53D71DFA8913009B9F4F /* MSIMapSearchTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00C53D61DFA8913009B9F4F /* MSIMapSearchTableCellView.swift */; };
+		B00E963E1DFE48E400DA56AD /* MSIMapSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00E963D1DFE48E400DA56AD /* MSIMapSearchBar.swift */; };
+		B00E96401DFE802B00DA56AD /* MSIMapSearchTableViewHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00E963F1DFE802B00DA56AD /* MSIMapSearchTableViewHeader.swift */; };
 		B09728F51DF504CE00F05291 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09728F41DF504CE00F05291 /* AppDelegate.swift */; };
 		B09728F71DF504CE00F05291 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09728F61DF504CE00F05291 /* ViewController.swift */; };
 		B09728FA1DF504CE00F05291 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B09728F81DF504CE00F05291 /* Main.storyboard */; };
@@ -27,6 +29,8 @@
 		B00C53D01DF8062A009B9F4F /* MSIMWAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMWAnnotation.swift; sourceTree = "<group>"; };
 		B00C53D41DFA51F4009B9F4F /* MSIMapSearchTableViewFooter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMapSearchTableViewFooter.swift; sourceTree = "<group>"; };
 		B00C53D61DFA8913009B9F4F /* MSIMapSearchTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMapSearchTableCellView.swift; sourceTree = "<group>"; };
+		B00E963D1DFE48E400DA56AD /* MSIMapSearchBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMapSearchBar.swift; sourceTree = "<group>"; };
+		B00E963F1DFE802B00DA56AD /* MSIMapSearchTableViewHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMapSearchTableViewHeader.swift; sourceTree = "<group>"; };
 		B09728F11DF504CE00F05291 /* MapSearchBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapSearchBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B09728F41DF504CE00F05291 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B09728F61DF504CE00F05291 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -76,9 +80,11 @@
 		B09728F31DF504CE00F05291 /* MapSearchBar */ = {
 			isa = PBXGroup;
 			children = (
+				B00E963D1DFE48E400DA56AD /* MSIMapSearchBar.swift */,
 				B00C53C91DF805A5009B9F4F /* MSIMapSearchView.swift */,
 				B00C53CA1DF805A5009B9F4F /* MSIMapSearchViewController.swift */,
 				B00C53D41DFA51F4009B9F4F /* MSIMapSearchTableViewFooter.swift */,
+				B00E963F1DFE802B00DA56AD /* MSIMapSearchTableViewHeader.swift */,
 				B00C53D61DFA8913009B9F4F /* MSIMapSearchTableCellView.swift */,
 				B09728F41DF504CE00F05291 /* AppDelegate.swift */,
 				B09728F61DF504CE00F05291 /* ViewController.swift */,
@@ -189,8 +195,10 @@
 				B09729091DF5142B00F05291 /* MSIMapSearchBarView.swift in Sources */,
 				B09729071DF513E000F05291 /* MSIMapSearchBarViewController.swift in Sources */,
 				B00C53CC1DF805A5009B9F4F /* MSIMapSearchViewController.swift in Sources */,
+				B00E963E1DFE48E400DA56AD /* MSIMapSearchBar.swift in Sources */,
 				B09728F51DF504CE00F05291 /* AppDelegate.swift in Sources */,
 				B00C53D11DF8062A009B9F4F /* MSIMWAnnotation.swift in Sources */,
+				B00E96401DFE802B00DA56AD /* MSIMapSearchTableViewHeader.swift in Sources */,
 				B00C53D71DFA8913009B9F4F /* MSIMapSearchTableCellView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
