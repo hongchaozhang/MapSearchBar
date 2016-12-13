@@ -27,13 +27,15 @@ public class MSIMapSearchTableViewHeader: UIView {
     }
 
     private func createContentView(theText: String?) {
-        let label = UILabel(frame: CGRect(x: 0, y: SearchViewUIConstants.TableView.sectionSpace, width: self.frame.size.width, height: self.frame.size.height - SearchViewUIConstants.TableView.sectionSpace))
-        label.text = theText
-        label.textColor = SearchViewUIConstants.TableView.headerLabelColor
-        label.font = UIFont(name: ".SFUIText-Regular", size: SearchViewUIConstants.TableView.headerFontSize) ?? UIFont.systemFont(ofSize: SearchViewUIConstants.TableView.headerFontSize)
-        label.textAlignment = .left
-        label.backgroundColor = UIColor.white
+        if let theText = theText {
+            let label = UILabel(frame: CGRect(x: 0, y: SearchViewUIConstants.TableView.sectionSpace, width: self.frame.size.width, height: self.frame.size.height - SearchViewUIConstants.TableView.sectionSpace))
+            label.text = theText
+            label.textColor = SearchViewUIConstants.TableView.headerLabelColor
+            label.font = UIFont(name: ".SFUIText-Regular", size: SearchViewUIConstants.TableView.headerFontSize) ?? UIFont.systemFont(ofSize: SearchViewUIConstants.TableView.headerFontSize)
+            label.textAlignment = .left
+            label.backgroundColor = UIColor.white
 
-        self.addSubview(label)
+            self.addSubview(label)
+        }
     }
 }

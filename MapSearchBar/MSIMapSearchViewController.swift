@@ -60,7 +60,8 @@ class MSIMapSearchViewController: UIViewController {
         self.searchView = self.createSearchView()
         self.searchView?.setSearchViewState(to: .beforeBegining)
 
-        self.view.addSubview(self.searchView!)
+        self.view = self.searchView
+//        self.view.addSubview(self.searchView!)
     }
 
     private func addObservers() {
@@ -97,7 +98,7 @@ class MSIMapSearchViewController: UIViewController {
     }
 
     private func createSearchView() -> MSIMapSearchView? {
-        let lSearchView = MSIMapSearchView(frame: CGRect(x: 0, y: 0, width: self.maxFrame.size.width, height: self.maxFrame.size.height))
+        let lSearchView = MSIMapSearchView(frame: self.maxFrame)
 
         lSearchView.createInitView()
         lSearchView.setSearchBarDelegate(delegate: self)
@@ -374,6 +375,10 @@ extension MSIMapSearchViewController: UITableViewDelegate {
                 let headerFrame = CGRect(origin: CGPoint.zero, size: CGSize(width: tableView.frame.size.width, height: SearchViewUIConstants.TableView.sectionHeaderHeight))
                 let header = MSIMapSearchTableViewHeader(frame: headerFrame, theText: theAllFilteredLayerNames[section])
                 return header
+            } else if theAllFilteredLayerNames.count == 1 {
+                let headerFrame = CGRect(origin: CGPoint.zero, size: CGSize(width: tableView.frame.size.width, height: SearchViewUIConstants.TableView.sectionSpace))
+                let header = MSIMapSearchTableViewHeader(frame: headerFrame, theText: nil)
+                return header
             }
         }
 
@@ -393,8 +398,12 @@ extension MSIMapSearchViewController: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if self.searchView?.searchType == .fromDataset {
-            return SearchViewUIConstants.TableView.sectionHeaderHeight
+        if self.searchView?.searchType == .fromDataset, let theAllFilteredLayerNames = self.allFilteredLayerNames {
+            if theAllFilteredLayerNames.count > 1 {
+                return SearchViewUIConstants.TableView.sectionHeaderHeight
+            } else if theAllFilteredLayerNames.count == 1 {
+                return SearchViewUIConstants.TableView.sectionSpace
+            }
         }
 
         return 0

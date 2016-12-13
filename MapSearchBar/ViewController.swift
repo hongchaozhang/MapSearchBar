@@ -12,6 +12,7 @@ import MapKit
 class ViewController: UIViewController {
     
     var mapView: MKMapView?
+    let layerCount = 2
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -56,11 +57,10 @@ extension ViewController: MSIMapSearchViewControllerDelegate {
 
     func getAllAnnotationsInMap() -> [String: [MSIMWAnnotation]] {
 
-        let layerCount = 4
         let annotationCountPerLayer = 8
         var allAnnotations = [String: [MSIMWAnnotation]]()
 
-        for layerIndex in 0..<layerCount {
+        for layerIndex in 0..<self.layerCount {
             let layerName = "layer \(layerIndex)"
             var annotationArray = [MSIMWAnnotation]()
             for annotationIndex in 0..<annotationCountPerLayer {
@@ -81,9 +81,8 @@ extension ViewController: MSIMapSearchViewControllerDelegate {
     }
 
     func getLayerNames() -> [String] {
-        let layerCount = 4
         var layerNames = [String]()
-        for layerIndex in 0..<layerCount {
+        for layerIndex in 0..<self.layerCount {
             layerNames.append("layer \(layerIndex)")
         }
         return layerNames

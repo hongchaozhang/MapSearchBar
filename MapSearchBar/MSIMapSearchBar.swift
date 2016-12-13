@@ -48,7 +48,7 @@ public class MSIMapSearchBar: UISearchBar {
         self.searchBarStyle = .minimal
         self.placeholder = "Search"
         self.isTranslucent = true
-        self.searchTextPositionAdjustment = UIOffsetMake(0, 0)
+        self.searchTextPositionAdjustment = UIOffsetMake(8, 0)
         self.showsCancelButton = false
         self.setSearchFieldBackgroundImage(MSIMapSearchView.image(with: SearchViewUIConstants.SearchBar.searchFieldBackgroundNormalColor), for: UIControlState.normal)
         self .sizeToFit()
