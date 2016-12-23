@@ -30,6 +30,7 @@ public class MSIMapSearchTableCellView: UITableViewCell {
 
         if self.contentLabel == nil {
             self.contentLabel = UILabel()
+            self.contentLabel?.lineBreakMode = .byTruncatingTail
             self.contentView.addSubview(self.contentLabel!)
         }
 

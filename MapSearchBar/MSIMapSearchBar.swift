@@ -33,6 +33,20 @@ public class MSIMapSearchBar: UISearchBar {
 
                 subview.frame = frame
             }
+
+            if let subview = subview as? UIButton {
+                subview.tintColor = SearchViewUIConstants.searchBarCancelButtonTintColor
+                if let titleLabel = subview.titleLabel {
+                    titleLabel.font = UIFont(name: ".SFUIText-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)
+                }
+                var cancelButtonFrame = subview.frame
+                let superViewFrame = subview.superview?.frame
+                if let superViewFrame = superViewFrame {
+                    cancelButtonFrame.origin.x = superViewFrame.size.width - cancelButtonFrame.size.width
+                    cancelButtonFrame.origin.y = (superViewFrame.size.height - cancelButtonFrame.size.height) / 2.0
+                    subview.frame = cancelButtonFrame
+                }
+            }
         }
     }
 

@@ -74,7 +74,18 @@ class MSIMapSearchViewController: UIViewController {
     }
 
     func keyboardWillHide(_ notification: NSNotification) {
-        self.searchView?.searchBar?.showsCancelButton = false
+//        self.searchView?.searchBar?.showsCancelButton = false
+        if let searchBar = self.searchView?.searchBar {
+            for subview in searchBar.subviews[0].subviews {
+                if let subview = subview as? UIButton {
+                    self.perform(#selector(MSIMapSearchViewController.enable(_:)), with: subview, afterDelay: 0.1)
+                }
+            }
+        }
+    }
+
+    func enable(_ cancelButton: UIButton) {
+        cancelButton.isEnabled = true
     }
 
     private func removeObservers() {
@@ -260,12 +271,23 @@ extension MSIMapSearchViewController: UISearchBarDelegate {
         print("begin editing")
         searchBar.showsCancelButton = true
         self.searchView?.setSearchViewState(to: .beginToSearch)
-        for subview in searchBar.subviews[0].subviews {
-            if let subview = subview as? UIButton {
-                subview.tintColor = SearchViewUIConstants.searchBarCancelButtonTintColor
-            }
-        }
+//        for subview in searchBar.subviews[0].subviews {
+//            if let subview = subview as? UIButton {
+//                subview.tintColor = SearchViewUIConstants.searchBarCancelButtonTintColor
+//                if let titleLabel = subview.titleLabel {
+//                    titleLabel.font = UIFont(name: ".SFUIText-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
+//                }
+//                var cancelButtonFrame = subview.frame
+//                var superViewFrame = subview.superview?.frame
+//                if let superViewFrame = superViewFrame {
+//                    cancelButtonFrame.origin.x = superViewFrame.size.width - cancelButtonFrame.size.width
+//                    cancelButtonFrame.origin.y = (superViewFrame.size.height - cancelButtonFrame.size.height) / 2.0
+//                    subview.frame = cancelButtonFrame
+//                }
+//            }
+//        }
     }
+
 
 }
 
@@ -464,6 +486,7 @@ extension MSIMapSearchViewController: UITableViewDelegate {
 
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.searchView?.searchBar?.resignFirstResponder()
+        print("swipe the table view")
     }
 }
 
