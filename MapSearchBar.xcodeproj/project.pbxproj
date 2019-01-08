@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		B00C53CB1DF805A5009B9F4F /* MSIMapSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00C53C91DF805A5009B9F4F /* MSIMapSearchView.swift */; };
 		B00C53CC1DF805A5009B9F4F /* MSIMapSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00C53CA1DF805A5009B9F4F /* MSIMapSearchViewController.swift */; };
-		B00C53D11DF8062A009B9F4F /* MSIMWAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00C53D01DF8062A009B9F4F /* MSIMWAnnotation.swift */; };
+		B00C53D11DF8062A009B9F4F /* CustomAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00C53D01DF8062A009B9F4F /* CustomAnnotation.swift */; };
 		B00C53D51DFA51F4009B9F4F /* MSIMapSearchTableViewFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00C53D41DFA51F4009B9F4F /* MSIMapSearchTableViewFooter.swift */; };
 		B00C53D71DFA8913009B9F4F /* MSIMapSearchTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00C53D61DFA8913009B9F4F /* MSIMapSearchTableCellView.swift */; };
 		B00E963E1DFE48E400DA56AD /* MSIMapSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00E963D1DFE48E400DA56AD /* MSIMapSearchBar.swift */; };
@@ -26,7 +26,7 @@
 /* Begin PBXFileReference section */
 		B00C53C91DF805A5009B9F4F /* MSIMapSearchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMapSearchView.swift; sourceTree = "<group>"; };
 		B00C53CA1DF805A5009B9F4F /* MSIMapSearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMapSearchViewController.swift; sourceTree = "<group>"; };
-		B00C53D01DF8062A009B9F4F /* MSIMWAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMWAnnotation.swift; sourceTree = "<group>"; };
+		B00C53D01DF8062A009B9F4F /* CustomAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAnnotation.swift; sourceTree = "<group>"; };
 		B00C53D41DFA51F4009B9F4F /* MSIMapSearchTableViewFooter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMapSearchTableViewFooter.swift; sourceTree = "<group>"; };
 		B00C53D61DFA8913009B9F4F /* MSIMapSearchTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMapSearchTableCellView.swift; sourceTree = "<group>"; };
 		B00E963D1DFE48E400DA56AD /* MSIMapSearchBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MSIMapSearchBar.swift; sourceTree = "<group>"; };
@@ -56,7 +56,7 @@
 		B00C53CF1DF805FA009B9F4F /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
-				B00C53D01DF8062A009B9F4F /* MSIMWAnnotation.swift */,
+				B00C53D01DF8062A009B9F4F /* CustomAnnotation.swift */,
 			);
 			name = Mocks;
 			sourceTree = "<group>";
@@ -127,12 +127,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0810;
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = "Hongchao Zhang";
 				TargetAttributes = {
 					B09728F01DF504CE00F05291 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 4S9ASJUQLQ;
+						LastSwiftMigration = 1010;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -180,7 +181,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi";
+			shellScript = "if which swiftlint >/dev/null; then\nswiftlint\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -197,7 +198,7 @@
 				B00C53CC1DF805A5009B9F4F /* MSIMapSearchViewController.swift in Sources */,
 				B00E963E1DFE48E400DA56AD /* MSIMapSearchBar.swift in Sources */,
 				B09728F51DF504CE00F05291 /* AppDelegate.swift in Sources */,
-				B00C53D11DF8062A009B9F4F /* MSIMWAnnotation.swift in Sources */,
+				B00C53D11DF8062A009B9F4F /* CustomAnnotation.swift in Sources */,
 				B00E96401DFE802B00DA56AD /* MSIMapSearchTableViewHeader.swift in Sources */,
 				B00C53D71DFA8913009B9F4F /* MSIMapSearchTableCellView.swift in Sources */,
 			);
@@ -234,15 +235,24 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -284,15 +294,24 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -327,7 +346,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.microstrategy.MapSearchBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -340,7 +360,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.microstrategy.MapSearchBar;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};

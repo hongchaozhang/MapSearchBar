@@ -16,34 +16,34 @@ public enum LayerDataShownType {
 }
 
 protocol MSIMapSearchViewControllerDelegate: class {
-    func getAllAnnotationsInMap() -> [String: [MSIMWAnnotation]]
+    func getAllAnnotationsInMap() -> [String: [CustomAnnotation]]
     func getLayerNames() -> [String]
-    func highlightAnnotations(annotations: [String: [MSIMWAnnotation]])
+    func highlightAnnotations(annotations: [String: [CustomAnnotation]])
 }
 
 class MSIMapSearchViewController: UIViewController {
-    var maxFrame: CGRect
+    var maxFrame: CGRect!
     weak var delegate: MSIMapSearchViewControllerDelegate?
     weak var mapView: MKMapView?
     var searchView: MSIMapSearchView?
     var localSearch: MKLocalSearch?
-    var dataFromDataset: [String: [MSIMWAnnotation]]?
+    var dataFromDataset: [String: [CustomAnnotation]]?
     var dataFromAppleService: [MKMapItem]?
     var allFilteredLayerNames: [String]?
     var allFilteredLayerDataShownType: [LayerDataShownType]?
-
-    init(theMaxFrame: CGRect, theDelegate: MSIMapSearchViewControllerDelegate?, theMapView: MKMapView) {
-        maxFrame = theMaxFrame
-        delegate = theDelegate
-        mapView = theMapView
+    
+    init(maxFrame: CGRect, delegate: MSIMapSearchViewControllerDelegate?, mapView: MKMapView) {
         super.init(nibName: nil, bundle: nil)
-        self.addObservers()
+        self.addKeyboardObservers()
+        self.maxFrame = maxFrame
+        self.delegate = delegate
+        self.mapView = mapView
     }
-
+    
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     deinit {
         if self.localSearch != nil {
             self.localSearch!.cancel()
@@ -51,30 +51,28 @@ class MSIMapSearchViewController: UIViewController {
         }
         self.removeObservers()
     }
-
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.mockDataForTableView()
-
+        
         self.searchView = self.createSearchView()
-        self.searchView?.setSearchViewState(to: .beforeBegining)
-
+        self.searchView?.setSearchView(to: .beforeBegining)
+        
         self.view = self.searchView
-//        self.view.addSubview(self.searchView!)
     }
-
-    private func addObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(MSIMapSearchViewController.keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(MSIMapSearchViewController.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+    
+    private func addKeyboardObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(MSIMapSearchViewController.keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MSIMapSearchViewController.keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
     }
-
-    func keyboardWillShow(_ notification: NSNotification){
+    
+    @objc func keyboardWillShow(_ notification: NSNotification) {
         // Do something here
     }
-
-    func keyboardWillHide(_ notification: NSNotification) {
-//        self.searchView?.searchBar?.showsCancelButton = false
+    
+    @objc func keyboardWillHide(_ notification: NSNotification) {
         if let searchBar = self.searchView?.searchBar {
             for subview in searchBar.subviews[0].subviews {
                 if let subview = subview as? UIButton {
@@ -83,48 +81,48 @@ class MSIMapSearchViewController: UIViewController {
             }
         }
     }
-
-    func enable(_ cancelButton: UIButton) {
+    
+    @objc func enable(_ cancelButton: UIButton) {
         cancelButton.isEnabled = true
     }
-
+    
     private func removeObservers() {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillHide, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
     }
-
+    
     private func mockDataForTableView() {
         self.dataFromDataset = self.delegate?.getAllAnnotationsInMap()
         self.allFilteredLayerNames = self.delegate?.getLayerNames()
         self.allFilteredLayerDataShownType = [LayerDataShownType]()
-        if let theLayerNames = self.allFilteredLayerNames {
-            if theLayerNames.count > 1 {
-                for _ in 0..<theLayerNames.count {
+        if let layerNames = self.allFilteredLayerNames {
+            if layerNames.count > 1 {
+                for _ in 0..<layerNames.count {
                     self.allFilteredLayerDataShownType?.append(.showPart)
                 }
-            } else if theLayerNames.count == 1 {
+            } else if layerNames.count == 1 {
                 self.allFilteredLayerDataShownType?.append(.showAll)
             }
         }
     }
-
+    
     private func createSearchView() -> MSIMapSearchView? {
         let lSearchView = MSIMapSearchView(frame: self.maxFrame)
-
+        
         lSearchView.createInitView()
         lSearchView.setSearchBarDelegate(delegate: self)
         lSearchView.setTableViewDelegate(delegate: self)
         lSearchView.setTableViewDataSource(dataSource: self)
-
+        
         return lSearchView
     }
-
+    
     public func filterAnnotations(for keyword: String?) {
         guard let keyword = keyword else {
             return
         }
-
-        var allFilteredAnnotations = [String: [MSIMWAnnotation]]()
+        
+        var allFilteredAnnotations = [String: [CustomAnnotation]]()
         var allFilteredLayerNames = [String]()
         var allLayerDataShownType = [LayerDataShownType]()
         var totalCount = 0
@@ -132,9 +130,9 @@ class MSIMapSearchViewController: UIViewController {
             for index in 0..<allLayerNames.count {
                 let layerName = allLayerNames[index]
                 if let allAnnotationsInLayer = allAnnotations[layerName] {
-                    var filteredAnnotationsInLayer: [MSIMWAnnotation] = [MSIMWAnnotation]()
+                    var filteredAnnotationsInLayer: [CustomAnnotation] = [CustomAnnotation]()
                     for annotation in allAnnotationsInLayer {
-                        let annotationName = annotation.getFirstAttributeDisplayFormValue()
+                        let annotationName = annotation.getAnnotationDisplayName()
                         if (annotationName?.lowercased().range(of: keyword.lowercased())) != nil {
                             filteredAnnotationsInLayer.append(annotation)
                         }
@@ -147,96 +145,98 @@ class MSIMapSearchViewController: UIViewController {
                     }
                 }
             }
-
+            
             self.dataFromDataset = allFilteredAnnotations
             self.allFilteredLayerNames = allFilteredLayerNames
             self.allFilteredLayerDataShownType = allLayerDataShownType
         }
-
-        if self.searchView?.searchType == .fromDataset {
+        
+        if self.searchView?.searchType == .local {
             self.searchView?.updateTableView()
         }
         self.searchView?.updateSearchTypeControl(index: 0, count: totalCount)
-
+        
         if totalCount > 0 {
-            self.searchView?.setSearchViewState(to: .endSearchingWithResults)
+            self.searchView?.setSearchView(to: .endSearchingWithResults)
         }
-
+        
         delegate?.highlightAnnotations(annotations: allFilteredAnnotations)
     }
-
+    
     public func searchFromAppleService(for keyword: String?) {
         func checkLocalDatasetResult() {
-            if let theDataFromDataset = self.dataFromDataset {
-                if theDataFromDataset.count == 0 {
-                    self.searchView?.setSearchViewState(to: .endSearchingWithoutResults)
+            if let dataFromDataset = self.dataFromDataset {
+                if dataFromDataset.count == 0 {
+                    self.searchView?.setSearchView(to: .endSearchingWithoutResults)
                 }
             } else {
-                self.searchView?.setSearchViewState(to: .endSearchingWithoutResults)
+                self.searchView?.setSearchView(to: .endSearchingWithoutResults)
             }
         }
-
+        
         guard let mapView = self.mapView else {
             return
         }
-
+        
         if self.localSearch != nil {
             self.localSearch!.cancel()
             self.localSearch = nil
         }
-
-        let request = MKLocalSearchRequest()
+        
+        let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = keyword
         request.region = mapView.region
-
+        
         self.localSearch = MKLocalSearch(request: request)
         self.localSearch?.start(completionHandler: {(response, error) in
             guard let response = response else {
-                print("Search error: \(error)")
+                if let error = error {
+                    print("Search error: \(error)")
+                }
                 self.searchView?.updateSearchTypeControl(index: 1, count: 0)
                 checkLocalDatasetResult()
                 return
             }
-
-            if let theDataFromDataset = self.dataFromDataset {
-                if theDataFromDataset.count == 0 {
-                    self.searchView?.setSearchViewState(to: .endSearchingWithResults)
+            
+            if let dataFromDataset = self.dataFromDataset {
+                if dataFromDataset.count == 0 {
+                    self.searchView?.setSearchView(to: .endSearchingWithResults)
                 }
             }
-
+            
             self.dataFromAppleService = response.mapItems
-            if self.searchView?.searchType == .fromAppleService {
+            if self.searchView?.searchType == .appleService {
                 self.searchView?.updateTableView()
             }
             var totalCount = 0
-            if let theDataFromAppleService = self.dataFromAppleService {
-                totalCount = theDataFromAppleService.count
+            if let dataFromAppleService = self.dataFromAppleService {
+                totalCount = dataFromAppleService.count
             }
             self.searchView?.updateSearchTypeControl(index: 1, count: totalCount)
-
+            
             for item in response.mapItems {
                 print("\(item)")
             }
         })
     }
-
+    
     override public func loadView() {
         self.view = UIView(frame: self.maxFrame)
     }
-
-    func getRows(for section: Int) -> [MSIMWAnnotation]? {
-        guard let theLayerNames = self.allFilteredLayerNames else {
+    
+    func getRows(for section: Int) -> [CustomAnnotation]? {
+        guard let layerNames = self.allFilteredLayerNames else {
             return nil
         }
-
-        guard section < theLayerNames.count else {
+        
+        guard section < layerNames.count else {
             return nil
         }
-
-        let layerName = theLayerNames[section]
+        
+        let layerName = layerNames[section]
         return self.dataFromDataset?[layerName]
     }
-
+    
 }
 
 extension MSIMapSearchViewController: UISearchBarDelegate {
@@ -244,102 +244,76 @@ extension MSIMapSearchViewController: UISearchBarDelegate {
         if searchText.isEmpty {
             return
         }
-
+        
         self.searchFromAppleService(for: searchText)
         self.filterAnnotations(for: searchText)
-
-//        if self.searchView?.searchType == .fromDataset {
-//            self.filterAnnotations(for: searchText)
-//        } else if self.searchView?.searchType == .fromAppleService {
-//            self.searchFromAppleService(for: searchText)
-//        }
     }
-
+    
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         NSLog("Cancel button is clicked")
         searchBar.showsCancelButton = false
         searchBar.text = ""
         searchBar.resignFirstResponder()
-        self.searchView?.setSearchViewState(to: .beforeBegining)
+        self.searchView?.setSearchView(to: .beforeBegining)
     }
-
+    
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         NSLog("Search button is clicked")
     }
-
+    
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         print("begin editing")
         searchBar.showsCancelButton = true
-        self.searchView?.setSearchViewState(to: .beginToSearch)
-//        for subview in searchBar.subviews[0].subviews {
-//            if let subview = subview as? UIButton {
-//                subview.tintColor = SearchViewUIConstants.searchBarCancelButtonTintColor
-//                if let titleLabel = subview.titleLabel {
-//                    titleLabel.font = UIFont(name: ".SFUIText-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
-//                }
-//                var cancelButtonFrame = subview.frame
-//                var superViewFrame = subview.superview?.frame
-//                if let superViewFrame = superViewFrame {
-//                    cancelButtonFrame.origin.x = superViewFrame.size.width - cancelButtonFrame.size.width
-//                    cancelButtonFrame.origin.y = (superViewFrame.size.height - cancelButtonFrame.size.height) / 2.0
-//                    subview.frame = cancelButtonFrame
-//                }
-//            }
-//        }
+        self.searchView?.setSearchView(to: .beginToSearch)
     }
-
-
 }
 
 extension MSIMapSearchViewController: UITableViewDataSource {
-
+    
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var cell: MSIMapSearchTableCellView? = tableView.dequeueReusableCell(withIdentifier: SearchViewUIConstants.TableView.cellReuseIdentifier) as? MSIMapSearchTableCellView
         if cell == nil {
-            cell = MSIMapSearchTableCellView(style: UITableViewCellStyle.default, reuseIdentifier: SearchViewUIConstants.TableView.cellReuseIdentifier)
+            cell = MSIMapSearchTableCellView(style: UITableViewCell.CellStyle.default, reuseIdentifier: SearchViewUIConstants.TableView.cellReuseIdentifier)
         }
         var cellText = "--"
-        if let lSearchView = self.searchView {
-            switch lSearchView.searchType {
-            case .fromDataset:
+        if let searchView = self.searchView {
+            switch searchView.searchType {
+            case .local:
                 let section = indexPath[0]
                 let row = indexPath[1]
-                let annotations = self.getRows(for: section)
-                guard let theAnnotations = annotations else {
+                guard let annotations = self.getRows(for: section) else {
                     break
                 }
-                cellText = theAnnotations[row].getFirstAttributeDisplayFormValue()!
-                break
-            case .fromAppleService:
-                if let theDataFromAppleService = self.dataFromAppleService {
-                    let mapItem = theDataFromAppleService[indexPath[1]]
+                cellText = annotations[row].getAnnotationDisplayName()!
+            case .appleService:
+                if let dataFromAppleService = self.dataFromAppleService {
+                    let mapItem = dataFromAppleService[indexPath[1]]
                     if let name = mapItem.name {
                         cellText = name
                     }
                 }
-                break
             }
-            cell?.createLabels(searchType: lSearchView.searchType, contentString: cellText)
+            cell?.createLabels(searchType: searchView.searchType, contentString: cellText)
         }
-
+        
         return cell!
     }
 }
 
 extension MSIMapSearchViewController: UITableViewDelegate {
-
+    
     private func getRemainningCount(for section: Int) -> Int {
-        guard let theLayerNames = self.allFilteredLayerNames else {
+        guard let layerNames = self.allFilteredLayerNames else {
             return 0
         }
-
-        guard section < theLayerNames.count else {
+        
+        guard section < layerNames.count else {
             return 0
         }
-
+        
         var remainningCount = 0
-
-        if let annotations = self.dataFromDataset?[theLayerNames[section]] {
+        
+        if let annotations = self.dataFromDataset?[layerNames[section]] {
             if let layerDataShownType = self.allFilteredLayerDataShownType?[section] {
                 switch layerDataShownType {
                 case .showPart:
@@ -350,10 +324,10 @@ extension MSIMapSearchViewController: UITableViewDelegate {
                 }
             }
         }
-
+        
         return remainningCount
     }
-
+    
     private func getFooterText(for section: Int) -> String {
         var footerText = ""
         if let layerDataShownType = self.allFilteredLayerDataShownType?[section] {
@@ -361,89 +335,85 @@ extension MSIMapSearchViewController: UITableViewDelegate {
             case .showPart:
                 let remainningCount = self.getRemainningCount(for: section)
                 footerText = "+\(remainningCount) more"
-                break
             case .showAll:
                 footerText = "Hide"
-                break
             }
         }
-
+        
         return footerText
     }
-
+    
     public func numberOfSections(in tableView: UITableView) -> Int {
         var sectionCount = 0
-        if let lSearchType = self.searchView?.searchType {
-            switch lSearchType {
-            case .fromDataset:
-                guard let theLayerNames = self.allFilteredLayerNames else {
+        if let searchType = self.searchView?.searchType {
+            switch searchType {
+            case .local:
+                guard let layerNames = self.allFilteredLayerNames else {
                     break
                 }
-                sectionCount = theLayerNames.count
-                break
-            case .fromAppleService:
+                sectionCount = layerNames.count
+            case .appleService:
                 sectionCount = 1
-                break
             }
         }
-
+        
         return sectionCount
-
+        
     }
-
+    
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if self.searchView?.searchType == .fromDataset, let theAllFilteredLayerNames = self.allFilteredLayerNames {
-            if theAllFilteredLayerNames.count > 1 {
+        if self.searchView?.searchType == .local, let allFilteredLayerNames = self.allFilteredLayerNames {
+            if allFilteredLayerNames.count > 1 {
                 let headerFrame = CGRect(origin: CGPoint.zero, size: CGSize(width: tableView.frame.size.width, height: SearchViewUIConstants.TableView.sectionHeaderHeight))
-                let header = MSIMapSearchTableViewHeader(frame: headerFrame, theText: theAllFilteredLayerNames[section])
+                let header = MSIMapSearchTableViewHeader(frame: headerFrame, text: allFilteredLayerNames[section])
                 return header
-            } else if theAllFilteredLayerNames.count == 1 {
+            } else if allFilteredLayerNames.count == 1 {
                 let headerFrame = CGRect(origin: CGPoint.zero, size: CGSize(width: tableView.frame.size.width, height: SearchViewUIConstants.TableView.sectionSpace))
-                let header = MSIMapSearchTableViewHeader(frame: headerFrame, theText: nil)
+                let header = MSIMapSearchTableViewHeader(frame: headerFrame, text: nil)
                 return header
             }
         }
-
+        
         return nil
     }
-
+    
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        if self.searchView?.searchType == .fromDataset {
+        if self.searchView?.searchType == .local {
             let footerFrame = CGRect(origin: CGPoint.zero, size: CGSize(width: tableView.frame.size.width, height: SearchViewUIConstants.TableView.sectionFooterHeight))
-            let footer = MSIMapSearchTableViewFooter(frame: footerFrame, theSection: section, theDelegate: self)
+            let footer = MSIMapSearchTableViewFooter(frame: footerFrame, section: section, delegate: self)
             footer.createButton(text: self.getFooterText(for: section))
-
+            
             return footer
         }
-
+        
         return nil
     }
-
+    
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if self.searchView?.searchType == .fromDataset, let theAllFilteredLayerNames = self.allFilteredLayerNames {
-            if theAllFilteredLayerNames.count > 1 {
+        if self.searchView?.searchType == .local, let allFilteredLayerNames = self.allFilteredLayerNames {
+            if allFilteredLayerNames.count > 1 {
                 return SearchViewUIConstants.TableView.sectionHeaderHeight
-            } else if theAllFilteredLayerNames.count == 1 {
+            } else if allFilteredLayerNames.count == 1 {
                 return SearchViewUIConstants.TableView.sectionSpace
             }
         }
-
+        
         return 0
     }
-
+    
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if self.searchView?.searchType == .fromDataset {
+        if self.searchView?.searchType == .local {
             return SearchViewUIConstants.TableView.sectionFooterHeight
         }
-
+        
         return 0
     }
-
+    
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var rows = 0
-        if let lSearchView = self.searchView {
-            switch lSearchView.searchType {
-            case .fromDataset:
+        if let searchView = self.searchView {
+            switch searchView.searchType {
+            case .local:
                 if let annotations = self.getRows(for: section) {
                     if let layerDataShownType = self.allFilteredLayerDataShownType?[section] {
                         switch layerDataShownType {
@@ -457,33 +427,31 @@ extension MSIMapSearchViewController: UITableViewDelegate {
                         rows = annotations.count
                     }
                 }
-                break
-            case .fromAppleService:
+            case .appleService:
                 if let count = self.dataFromAppleService?.count {
                     rows = count
                 }
-                break
             }
         }
         return rows
     }
-
+    
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return SearchViewUIConstants.TableView.rowHeight
     }
-
+    
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if let cell = tableView.cellForRow(at: indexPath) as? MSIMapSearchTableCellView {
             cell.highlightCell()
         }
     }
-
+    
     public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         if let cell = tableView.cellForRow(at: indexPath) as? MSIMapSearchTableCellView {
             cell.dehighlightCell()
         }
     }
-
+    
     public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         self.searchView?.searchBar?.resignFirstResponder()
         print("swipe the table view")
@@ -496,13 +464,11 @@ extension MSIMapSearchViewController: MSIMapSearchTableViewFooterDelegate {
             switch layerDataShownType {
             case .showPart:
                 self.allFilteredLayerDataShownType?[section] = .showAll
-                break
             case .showAll:
                 self.allFilteredLayerDataShownType?[section] = .showPart
-                break
             }
         }
-
+        
         self.searchView?.updateTableView()
     }
 }

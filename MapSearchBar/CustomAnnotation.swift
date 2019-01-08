@@ -8,14 +8,14 @@
 
 import Foundation
 
-class MSIMWAnnotation {
-    var name: String
+class CustomAnnotation {
+    private var name: String
 
     init(name: String) {
         self.name = name
     }
 
-    func getFirstAttributeDisplayFormValue() -> String? {
+    func getAnnotationDisplayName() -> String? {
         return self.name
     }
 }

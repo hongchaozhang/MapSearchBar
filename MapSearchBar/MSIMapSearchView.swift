@@ -14,7 +14,7 @@ public struct SearchViewUIConstants {
     static let cornerRadius: CGFloat = 4.0
 
     static let searchBarCancelButtonTintColor = UIColor(red: 0x27/255.0, green: 0xA7/255.0, blue: 0xEE/255.0, alpha: 1.0)
-
+    
     static let fontFamily: String = ".SFUIText-Regular"
     static let highlightFontFamily: String = ".SFUIText-Bold"
 
@@ -37,6 +37,8 @@ public struct SearchViewUIConstants {
     public struct SearchTypeButton {
         static let height: CGFloat = 30.0
         static let bottomMargin: CGFloat = 16.0
+        static let localTypeTitle: String = "Local"
+        static let appleServiceTypeTile: String = "Apple Service"
     }
 
     public struct TableView {
@@ -74,8 +76,8 @@ public struct SearchViewUIConstants {
 }
 
 public enum SearchType {
-    case fromDataset
-    case fromAppleService
+    case local
+    case appleService
 }
 
 public enum SearchViewState {
@@ -93,15 +95,13 @@ public class MSIMapSearchView: UIView {
     var draggingContainer: UIView?
     var maxFrame: CGRect
     var searchType: SearchType {
-        var lSearchType: SearchType = .fromDataset
-        if let lSearchTypeControl = self.searchTypeControl {
-            switch lSearchTypeControl.selectedSegmentIndex {
+        var lSearchType: SearchType = .local
+        if let searchTypeControl = self.searchTypeControl {
+            switch searchTypeControl.selectedSegmentIndex {
             case 0:
-                lSearchType = .fromDataset
-                break
+                lSearchType = .local
             case 1:
-                lSearchType = .fromAppleService
-                break
+                lSearchType = .appleService
             default:
                 break
             }
@@ -169,71 +169,77 @@ public class MSIMapSearchView: UIView {
         return image!
     }
 
-    func setSearchViewState(to state: SearchViewState) {
+    private func changeToBeforeBeginningState() {
+        self.searchBar?.showsCancelButton = false
+        self.searchBar?.setSearchFieldBackgroundImage(MSIMapSearchView.image(with: SearchViewUIConstants.SearchBar.searchFieldBackgroundNormalColor), for: UIControl.State.normal)
+
+        self.backgroundColor = UIColor.clear
+        let height = self.searchBar!.frame.origin.y + self.searchBar!.frame.size.height + SearchViewUIConstants.SearchBar.bottomMargin
+        self.frame = CGRect(origin: self.frame.origin, size: CGSize(width: self.bounds.size.width, height: height))
+
+        self.messageLabel?.isHidden = true
+        self.searchTypeControl?.isHidden = true
+        self.tableView?.isHidden = true
+        self.draggingContainer?.isHidden = true
+    }
+
+    private func changeToBeginToSearchState() {
+        self.searchBar?.setSearchFieldBackgroundImage(MSIMapSearchView.image(with: SearchViewUIConstants.SearchBar.searchFieldBackgroundEditorColor), for: UIControl.State.normal)
+
+        self.backgroundColor = UIColor.white
+        let height = self.messageLabel!.frame.origin.y + self.messageLabel!.frame.size.height + SearchViewUIConstants.MessageLabel.bottomMargin
+        self.frame = CGRect(origin: self.frame.origin, size: CGSize(width: self.bounds.size.width, height: height))
+
+        self.messageLabel?.text = "Search from dataset or map."
+        self.messageLabel?.isHidden = false
+        self.searchTypeControl?.isHidden = true
+        self.tableView?.isHidden = true
+        self.draggingContainer?.isHidden = true
+    }
+
+    private func changeToEndSearchingWithoutResultsState() {
+        self.searchBar?.setSearchFieldBackgroundImage(MSIMapSearchView.image(with: SearchViewUIConstants.SearchBar.searchFieldBackgroundEditorColor), for: UIControl.State.normal)
+
+        self.backgroundColor = UIColor.white
+        let height = self.messageLabel!.frame.origin.y + self.messageLabel!.frame.size.height + SearchViewUIConstants.MessageLabel.bottomMargin
+        self.frame = CGRect(origin: self.frame.origin, size: CGSize(width: self.bounds.size.width, height: height))
+
+        self.messageLabel?.text = "No results found."
+        self.messageLabel?.isHidden = false
+        self.searchTypeControl?.isHidden = true
+        self.tableView?.isHidden = true
+        self.draggingContainer?.isHidden = true
+    }
+
+    private func changeToEndSearchingWithResultsState() {
+        self.searchBar?.setSearchFieldBackgroundImage(MSIMapSearchView.image(with: SearchViewUIConstants.SearchBar.searchFieldBackgroundEditorColor), for: UIControl.State.normal)
+
+        self.messageLabel?.isHidden = true
+        self.searchTypeControl?.isHidden = false
+        self.tableView?.isHidden = false
+        self.draggingContainer?.isHidden = false
+        self.backgroundColor = UIColor.white
+        self.frame = self.maxFrame
+    }
+
+    func setSearchView(to state: SearchViewState) {
         switch state {
         case .beforeBegining:
-            self.searchBar?.showsCancelButton = false
-            self.searchBar?.setSearchFieldBackgroundImage(MSIMapSearchView.image(with: SearchViewUIConstants.SearchBar.searchFieldBackgroundNormalColor), for: UIControlState.normal)
-
-            self.backgroundColor = UIColor.clear
-            let height = self.searchBar!.frame.origin.y + self.searchBar!.frame.size.height + SearchViewUIConstants.SearchBar.bottomMargin
-            self.frame = CGRect(origin: self.frame.origin, size: CGSize(width: self.bounds.size.width, height: height))
-
-            self.messageLabel?.isHidden = true
-            self.searchTypeControl?.isHidden = true
-            self.tableView?.isHidden = true
-            self.draggingContainer?.isHidden = true
-            break
+            changeToBeforeBeginningState()
         case .beginToSearch:
-//            self.searchBar?.searchBarStyle = .prominent
-//            self.searchBar?.setBackgroundImage(self.image(with: UIColor.clear), for: UIBarPosition.any, barMetrics: UIBarMetrics.default)
-            self.searchBar?.setSearchFieldBackgroundImage(MSIMapSearchView.image(with: SearchViewUIConstants.SearchBar.searchFieldBackgroundEditorColor), for: UIControlState.normal)
-
-            self.backgroundColor = UIColor.white
-            let height = self.messageLabel!.frame.origin.y + self.messageLabel!.frame.size.height + SearchViewUIConstants.MessageLabel.bottomMargin
-            self.frame = CGRect(origin: self.frame.origin, size: CGSize(width: self.bounds.size.width, height: height))
-
-            self.messageLabel?.text = "Search from dataset or map."
-            self.messageLabel?.isHidden = false
-            self.searchTypeControl?.isHidden = true
-            self.tableView?.isHidden = true
-            self.draggingContainer?.isHidden = true
-            break
+            changeToBeginToSearchState()
         case .endSearchingWithoutResults:
-//            self.searchBar?.searchBarStyle = .prominent
-//            self.searchBar?.setBackgroundImage(self.image(with: UIColor.clear), for: UIBarPosition.any, barMetrics: UIBarMetrics.default)
-            self.searchBar?.setSearchFieldBackgroundImage(MSIMapSearchView.image(with: SearchViewUIConstants.SearchBar.searchFieldBackgroundEditorColor), for: UIControlState.normal)
-
-            self.backgroundColor = UIColor.white
-            let height = self.messageLabel!.frame.origin.y + self.messageLabel!.frame.size.height + SearchViewUIConstants.MessageLabel.bottomMargin
-            self.frame = CGRect(origin: self.frame.origin, size: CGSize(width: self.bounds.size.width, height: height))
-
-            self.messageLabel?.text = "No results found."
-            self.messageLabel?.isHidden = false
-            self.searchTypeControl?.isHidden = true
-            self.tableView?.isHidden = true
-            self.draggingContainer?.isHidden = true
-            break
+            changeToEndSearchingWithoutResultsState()
         case .endSearchingWithResults:
-//            self.searchBar?.searchBarStyle = .prominent
-//            self.searchBar?.setBackgroundImage(self.image(with: UIColor.clear), for: UIBarPosition.any, barMetrics: UIBarMetrics.default)
-            self.searchBar?.setSearchFieldBackgroundImage(MSIMapSearchView.image(with: SearchViewUIConstants.SearchBar.searchFieldBackgroundEditorColor), for: UIControlState.normal)
-
-            self.messageLabel?.isHidden = true
-            self.searchTypeControl?.isHidden = false
-            self.tableView?.isHidden = false
-            self.draggingContainer?.isHidden = false
-            self.backgroundColor = UIColor.white
-            self.frame = self.maxFrame
-            break
+            changeToEndSearchingWithResultsState()
         }
     }
 
     private func createSearchBar() -> UISearchBar? {
         let frame = CGRect(x: SearchViewUIConstants.SearchBar.leftMargin - SearchViewUIConstants.SearchBar.padding,
-                                 y: SearchViewUIConstants.SearchBar.topMargin - SearchViewUIConstants.SearchBar.padding,
-                                 width: self.bounds.size.width - SearchViewUIConstants.SearchBar.leftMargin - SearchViewUIConstants.SearchBar.rightMargin + SearchViewUIConstants.SearchBar.padding * 2,
-                                 height: SearchViewUIConstants.SearchBar.height + SearchViewUIConstants.SearchBar.padding * 2)
+                           y: SearchViewUIConstants.SearchBar.topMargin - SearchViewUIConstants.SearchBar.padding,
+                           width: self.bounds.size.width - SearchViewUIConstants.SearchBar.leftMargin - SearchViewUIConstants.SearchBar.rightMargin + SearchViewUIConstants.SearchBar.padding * 2,
+                           height: SearchViewUIConstants.SearchBar.height + SearchViewUIConstants.SearchBar.padding * 2)
         let searchBar = MSIMapSearchBar(frame: frame)
 
         return searchBar
@@ -246,8 +252,8 @@ public class MSIMapSearchView: UIView {
         messageLabel.font = UIFont(name: ".SFUIText-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
 
         var yPos: CGFloat = 0.0
-        if let lSearchBar = self.searchBar {
-            yPos = lSearchBar.frame.origin.y + lSearchBar.bounds.size.height + SearchViewUIConstants.SearchBar.bottomMargin - SearchViewUIConstants.SearchBar.padding
+        if let searchBar = self.searchBar {
+            yPos = searchBar.frame.origin.y + searchBar.bounds.size.height + SearchViewUIConstants.SearchBar.bottomMargin - SearchViewUIConstants.SearchBar.padding
         }
 
         var width = self.bounds.size.width - SearchViewUIConstants.SearchBar.leftMargin - SearchViewUIConstants.SearchBar.rightMargin
@@ -269,8 +275,8 @@ public class MSIMapSearchView: UIView {
         searchTypeControl.tintColor = UIColor(red: 0x27/255.0, green: 0xAF/255.0, blue: 0xEE/255.0, alpha: 1.0)
 
         var yPos: CGFloat = 0.0
-        if let lSearchBar = self.searchBar {
-            yPos = lSearchBar.frame.origin.y + lSearchBar.bounds.size.height + SearchViewUIConstants.SearchBar.bottomMargin - SearchViewUIConstants.SearchBar.padding
+        if let searchBar = self.searchBar {
+            yPos = searchBar.frame.origin.y + searchBar.bounds.size.height + SearchViewUIConstants.SearchBar.bottomMargin - SearchViewUIConstants.SearchBar.padding
         }
 
         var width = self.bounds.size.width - SearchViewUIConstants.SearchBar.leftMargin - SearchViewUIConstants.SearchBar.rightMargin
@@ -280,24 +286,22 @@ public class MSIMapSearchView: UIView {
                                          y: yPos,
                                          width: width,
                                          height: SearchViewUIConstants.SearchTypeButton.height)
-        searchTypeControl.insertSegment(withTitle: "Dataset", at: 0, animated: false)
-        searchTypeControl.insertSegment(withTitle: "Map", at: 1, animated: false)
+        searchTypeControl.insertSegment(withTitle: SearchViewUIConstants.SearchTypeButton.localTypeTitle, at: 0, animated: false)
+        searchTypeControl.insertSegment(withTitle: SearchViewUIConstants.SearchTypeButton.appleServiceTypeTile, at: 1, animated: false)
         searchTypeControl.selectedSegmentIndex = 0
-        searchTypeControl.addTarget(self, action: #selector(MSIMapSearchView.searchTypeChanged(segmentControl:)), for: UIControlEvents.valueChanged)
-        
-//        searchTypeControl.isHidden = true
+        searchTypeControl.addTarget(self, action: #selector(MSIMapSearchView.searchTypeChanged(segmentControl:)), for: UIControl.Event.valueChanged)
 
         return searchTypeControl
     }
 
-    func searchTypeChanged(segmentControl: UISegmentedControl) {
+    @objc func searchTypeChanged(segmentControl: UISegmentedControl) {
         self.updateTableView()
     }
 
     private func getTableViewFrame() -> CGRect {
         var yPos: CGFloat = 0.0
-        if let lSearchTypeControl = self.searchTypeControl {
-            yPos = lSearchTypeControl.frame.origin.y + lSearchTypeControl.bounds.size.height // the margin is inside the first header of the table view
+        if let searchTypeControl = self.searchTypeControl {
+            yPos = searchTypeControl.frame.origin.y + searchTypeControl.bounds.size.height // the margin is inside the first header of the table view
         }
 
         var width = self.bounds.size.width - SearchViewUIConstants.SearchBar.leftMargin - SearchViewUIConstants.SearchBar.rightMargin
@@ -307,9 +311,9 @@ public class MSIMapSearchView: UIView {
         height = height > 0.0 ? height : 0.0
 
         let frame = CGRect(x: SearchViewUIConstants.SearchBar.leftMargin,
-                                 y: yPos,
-                                 width: width,
-                                 height: height)
+                           y: yPos,
+                           width: width,
+                           height: height)
 
         return frame
     }
@@ -322,9 +326,6 @@ public class MSIMapSearchView: UIView {
         tableView.frame = self.getTableViewFrame()
         tableView.reloadData()
 
-//        tableView.backgroundColor = UIColor.lightGray
-
-//        tableView.isHidden = true
         return tableView
     }
 
@@ -336,9 +337,9 @@ public class MSIMapSearchView: UIView {
         width = width > 0.0 ? width : 0.0
 
         let frame = CGRect(x: SearchViewUIConstants.SearchBar.leftMargin,
-                                            y: yPos,
-                                            width: width,
-                                            height: SearchViewUIConstants.DraggingIconContainer.height)
+                           y: yPos,
+                           width: width,
+                           height: SearchViewUIConstants.DraggingIconContainer.height)
 
         return frame
     }
@@ -368,10 +369,10 @@ public class MSIMapSearchView: UIView {
 
     private func getMinimumHeight() -> CGFloat {
         var minHeight: CGFloat = SearchViewUIConstants.DraggingIconContainer.height
-        if let lSearchTypeControl = self.searchTypeControl {
-            minHeight += lSearchTypeControl.frame.origin.y + lSearchTypeControl.frame.size.height + SearchViewUIConstants.SearchTypeButton.bottomMargin
-        } else if let lSearchBar = self.searchBar {
-            minHeight += lSearchBar.frame.origin.y + lSearchBar.frame.size.height + SearchViewUIConstants.SearchBar.bottomMargin
+        if let searchTypeControl = self.searchTypeControl {
+            minHeight += searchTypeControl.frame.origin.y + searchTypeControl.frame.size.height + SearchViewUIConstants.SearchTypeButton.bottomMargin
+        } else if let searchBar = self.searchBar {
+            minHeight += searchBar.frame.origin.y + searchBar.frame.size.height + SearchViewUIConstants.SearchBar.bottomMargin
         }
 
         return minHeight
@@ -380,7 +381,7 @@ public class MSIMapSearchView: UIView {
     @objc private func doPanning(panGesture: UIPanGestureRecognizer) {
         if panGesture.state == .changed {
             let verticalTranslation: CGFloat = panGesture.translation(in: self.draggingContainer).y
-//            print("translation: \(verticalTranslation)")
+            //            print("translation: \(verticalTranslation)")
             let oldFrame = self.frame
             var newHeight = oldFrame.size.height + verticalTranslation
             newHeight = newHeight > self.maxFrame.size.height ? self.maxFrame.size.height : newHeight
@@ -411,10 +412,11 @@ public class MSIMapSearchView: UIView {
     func updateSearchTypeControl(index: Int, count: Int) {
         var newTitle = ""
         if index == 0 {
-            newTitle = "Dataset(\(count))"
+            newTitle = SearchViewUIConstants.SearchTypeButton.localTypeTitle + "(\(count))"
         } else if index == 1 {
-            newTitle = "Map(\(count))"
+            newTitle = SearchViewUIConstants.SearchTypeButton.appleServiceTypeTile + "(\(count))"
         }
+
         self.searchTypeControl?.setTitle(newTitle, forSegmentAt: index)
     }
 }

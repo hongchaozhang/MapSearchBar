@@ -16,14 +16,14 @@ protocol MSIMapSearchBarViewDelegate: class {
 
 class MSIMapSearchBarViewController: UIViewController, MSIMapSearchBarViewDelegate {
     
-    var maxViewFrame: CGRect
+    var maxViewFrame: CGRect!
     weak var mapView: MKMapView?
     var localSearch: MKLocalSearch?
     
-    init(theMaxFrame: CGRect, theMapView: MKMapView?) {
-        maxViewFrame = theMaxFrame
-        mapView = theMapView
+    init(maxFrame: CGRect, mapView: MKMapView?) {
         super.init(nibName: nil, bundle: nil)
+        self.maxViewFrame = maxFrame
+        self.mapView = mapView
     }
     
     deinit {
@@ -38,7 +38,7 @@ class MSIMapSearchBarViewController: UIViewController, MSIMapSearchBarViewDelega
     }
     
     convenience init() {
-        self.init(theMaxFrame: CGRect(x: 0, y: 0, width: 100, height: 100), theMapView: nil)
+        self.init(maxFrame: CGRect(x: 0, y: 0, width: 100, height: 100), mapView: nil)
     }
     
     override func loadView() {
@@ -68,14 +68,16 @@ extension MSIMapSearchBarViewController: UISearchBarDelegate {
             self.localSearch = nil
         }
         
-        let request = MKLocalSearchRequest()
+        let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = searchText
         request.region = mapView.region
         
         self.localSearch = MKLocalSearch(request: request)
         self.localSearch?.start(completionHandler: {(response, error) in
             guard let response = response else {
-                print("Search error: \(error)")
+                if let error = error {
+                    print("Search error: \(error)")
+                }
                 return
             }
             
@@ -94,10 +96,7 @@ extension MSIMapSearchBarViewController: UISearchBarDelegate {
         print("Search button is clicked")
     }
 
-    // swiftlint:disable line_length
     public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-    // swiftlint:enable line_length
-//        print("scope button is clicked: \(selectedScope)")
     }
     
     public func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {

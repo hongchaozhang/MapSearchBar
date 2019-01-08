@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 
 public class MSIMapSearchTableCellView: UITableViewCell {
+    private let showIcon = false
     var iconLabel: UILabel?
     var contentLabel: UILabel?
 
@@ -21,11 +22,11 @@ public class MSIMapSearchTableCellView: UITableViewCell {
             self.iconLabel = UILabel()
             self.contentView.addSubview(self.iconLabel!)
         }
-        if let theIconLabel = self.iconLabel {
-            theIconLabel.text = "icon"
-            theIconLabel.sizeToFit()
-            let yPosForIcon = (SearchViewUIConstants.TableView.rowHeight - theIconLabel.bounds.size.height) / 2
-            theIconLabel.frame = CGRect(x: 0, y: yPosForIcon, width: theIconLabel.bounds.size.width, height: theIconLabel.bounds.size.height)
+        if let iconLabel = self.iconLabel, showIcon {
+            iconLabel.text = "icon"
+            iconLabel.sizeToFit()
+            let yPosForIcon = (SearchViewUIConstants.TableView.rowHeight - iconLabel.bounds.size.height) / 2
+            iconLabel.frame = CGRect(x: 0, y: yPosForIcon, width: iconLabel.bounds.size.width, height: iconLabel.bounds.size.height)
         }
 
         if self.contentLabel == nil {
@@ -34,26 +35,23 @@ public class MSIMapSearchTableCellView: UITableViewCell {
             self.contentView.addSubview(self.contentLabel!)
         }
 
-        if let theContentLabel = self.contentLabel {
-            theContentLabel.text = contentString
-            theContentLabel.textColor = SearchViewUIConstants.TableView.cellTextColor
-            theContentLabel.font = UIFont(name: SearchViewUIConstants.fontFamily, size: SearchViewUIConstants.TableView.cellFontSize) ?? UIFont.systemFont(ofSize: SearchViewUIConstants.TableView.cellFontSize)
-            theContentLabel.sizeToFit()
+        if let contentLabel = self.contentLabel {
+            contentLabel.text = contentString
+            contentLabel.textColor = SearchViewUIConstants.TableView.cellTextColor
+            contentLabel.font = UIFont(name: SearchViewUIConstants.fontFamily, size: SearchViewUIConstants.TableView.cellFontSize) ?? UIFont.systemFont(ofSize: SearchViewUIConstants.TableView.cellFontSize)
+            contentLabel.sizeToFit()
             let xPosForContent = self.iconLabel!.frame.origin.x + self.iconLabel!.frame.size.width + SearchViewUIConstants.TableView.rightMarginForIcon
-            let yPosForContent = (SearchViewUIConstants.TableView.rowHeight - theContentLabel.bounds.size.height) / 2
+            let yPosForContent = (SearchViewUIConstants.TableView.rowHeight - contentLabel.bounds.size.height) / 2
             let widthForContent = self.bounds.size.width - xPosForContent
-            theContentLabel.frame = CGRect(x: xPosForContent, y: yPosForContent, width: widthForContent, height: theContentLabel.bounds.size.height)
+            contentLabel.frame = CGRect(x: xPosForContent, y: yPosForContent, width: widthForContent, height: contentLabel.bounds.size.height)
         }
-
     }
 
     func highlightCell() {
         self.contentLabel?.font = UIFont(name: SearchViewUIConstants.highlightFontFamily, size: SearchViewUIConstants.TableView.cellFontSize) ?? UIFont.systemFont(ofSize: SearchViewUIConstants.TableView.cellFontSize)
-//        self.backgroundColor = UIColor.white
     }
 
     func dehighlightCell() {
         self.contentLabel?.font = UIFont(name: SearchViewUIConstants.fontFamily, size: SearchViewUIConstants.TableView.cellFontSize) ?? UIFont.systemFont(ofSize: SearchViewUIConstants.TableView.cellFontSize)
-//        self.backgroundColor = UIColor.white
     }
 }
