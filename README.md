@@ -1,12 +1,12 @@
 ## Introduction
 
-This is a demo for searching in Apple map, including local data searching and Apple map service data searching (using `MKLocalSearch`). The demo displays the searched results in a reasonable and grace style.
+This is a demo for searching in Apple map, including local data searching and Apple map service data searching (using `MKLocalSearch`). The demo displays the searched results in a reasonable and graceful style.
 
 The demo supports multiple layer data searching. That is, if the annotations on your map belong to multiple layers, the searched results will also include the layer info.
 
 See the demo below.
 
-![map search demo](demo.gif)
+![map search demo](Demo.gif)
 
 ## Usage
 It is easy to use the search component in your application, you just need:
